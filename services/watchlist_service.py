@@ -1,5 +1,5 @@
 """
-services/watchlist_service.py — CineLog (feature/watchlist branch)
+services/watchlist_service.py — CineLog
 
 Business logic for the watchlist feature.
 """
@@ -9,33 +9,80 @@ from models import Film, WatchlistEntry
 from services.collection_service import FilmNotFoundError
 
 
-def save_to_watchlist(user_id, film_id):
+class AlreadyInWatchlistError(Exception):
+    """Raised when a film is already in the user's watchlist."""
+    pass
+
+
+class NotInWatchlistError(Exception):
+    """Raised when trying to remove a film that isn't on the watchlist."""
+    pass
+
+
+def add_to_watchlist(user_id, film_id, public=False):
     """
     Save a film to a user's watchlist.
 
     Args:
         user_id (str): UUID of the user.
-        film_id (int): ID of the film. (Note: integer — pre-refactor)
+        film_id: ID of the film (Integer or UUID depending on refactor stage).
+        public (bool): Visibility of the watchlist entry. Default is False (Private).
 
     Returns:
         WatchlistEntry: The newly created entry.
 
     Raises:
         FilmNotFoundError: If film_id does not exist.
+        AlreadyInWatchlistError: If the film is already in the user's watchlist.
     """
     film = db.session.get(Film, film_id)
     if film is None:
         raise FilmNotFoundError(f"No film found with id '{film_id}'")
 
-    entry = WatchlistEntry(user_id=user_id, film_id=film_id)
+    existing = WatchlistEntry.query.filter_by(
+        user_id=user_id, film_id=film_id
+    ).first()
+    if existing:
+        raise AlreadyInWatchlistError(
+            f"Film '{film_id}' is already on this user's watchlist"
+        )
+
+    entry = WatchlistEntry(user_id=user_id, film_id=film_id, public=public)
     db.session.add(entry)
     db.session.commit()
     return entry
 
 
+def remove_from_watchlist(user_id, film_id):
+    """
+    Remove a film from a user's watchlist.
+
+    Args:
+        user_id (str): UUID of the user.
+        film_id: ID of the film.
+
+    Returns:
+        bool: True if successfully removed.
+
+    Raises:
+        NotInWatchlistError: If the film is not on the user's watchlist.
+    """
+    entry = WatchlistEntry.query.filter_by(
+        user_id=user_id, film_id=film_id
+    ).first()
+    if entry is None:
+        raise NotInWatchlistError(
+            f"Film '{film_id}' is not on this user's watchlist"
+        )
+
+    db.session.delete(entry)
+    db.session.commit()
+    return True
+
+
 def get_watchlist(user_id):
     """
-    Return all films on a user's watchlist.
+    Return all films on a user's watchlist, sorted by date added (newest first).
 
     Args:
         user_id (str): UUID of the user.
@@ -47,7 +94,7 @@ def get_watchlist(user_id):
         WatchlistEntry.query
         .filter_by(user_id=user_id)
         .join(Film)
-        .order_by(Film.title.asc())
+        .order_by(WatchlistEntry.date_added.desc())
         .all()
     )
 
