@@ -104,9 +104,19 @@ The Watchlist feature allows users to save films they intend to watch in the fut
 ## Git History (Linear History)
 
 ```
-* docs: add CONTEXT.md, ARCHITECTURE.md, and pr-response.md
-* test: add unit tests for watchlist addition, removal, and sorting
-* fix: update film IDs to UUID format after main refactor
-* feat: add deduplication and removal logic to watchlist
-* fix: rename save_to_watchlist to add_to_watchlist
+git log --oneline
+545b6ab (HEAD -> feature/watchlist) docs: finalize setup instructions and skills records
+1f00808 docs: add pr-response.md with design decisions and feature map
+1a51df0 fix: update film_id to UUID format after main refactor
+a7e84e8 test: add test for nonexistent film_id in add_to_watchlist
+5e4d5b2 feat: implement remove_from_watchlist, visibility toggle, and date-added sorting
+b8d0516 fix: add deduplication logic to prevent duplicate watchlist entries
+3bdf513 fix: rename save_to_watchlist to add_to_watchlist per naming convention
+b2e5759 fix: update film retrieval to use db.session.get
+6383e8f (origin/main, origin/HEAD, main) Add files via upload
+6b26726 Document grading criteria and project requirements for CineLog
+a1bcf27 Create cinelog.md
+bbe206c (upstream/main, upstream/HEAD) Merge pull request #2 from ascherj/chore/add-gitignore
+718a9a8 chore: add .gitignore for generated files
+07ca580 refactor: migrate film IDs from integer to UUID
 ```
