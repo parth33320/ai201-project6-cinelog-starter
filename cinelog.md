@@ -340,4 +340,3 @@ PR Response Doc describes the implementation, including what it does when the fi
 Commit history includes an additional test: commit beyond the one required for Comment 3. PR Response Doc explains what edge case the test covers and why the student chose that case.
 +1pt	Visibility Toggle Endpoint
 Commit history includes a feat: commit describing the visibility toggle addition. PR Response Doc describes how the public parameter works, what the default is, and how a caller would use it.
-

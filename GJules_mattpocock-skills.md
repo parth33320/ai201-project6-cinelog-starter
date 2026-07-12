@@ -5338,5 +5338,3 @@ Keeping configuration management to a single skill also avoids the maintenance c
 ## Prior requests
 
 - #106 — Feature request: verify/check mode for setup-matt-pocock-skills
-
-
